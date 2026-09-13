@@ -20,6 +20,22 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/rishabhyadav8081/prime-vedio.git'
             }
         }
+        stage('Check Commit') {
+    steps {
+        script {
+            def commitMessage = sh(
+                script: 'git log -1 --pretty=%B',
+                returnStdout: true
+            ).trim()
+
+            if (commitMessage.startsWith('JENKINS:')) {
+                echo "Jenkins-generated commit detected. Skipping pipeline."
+                currentBuild.result = 'NOT_BUILT'
+                error('Skipping Jenkins-generated commit')
+            }
+        }
+    }
+}
        
           stage('NPM install') {
             steps {
@@ -69,7 +85,7 @@ pipeline {
                }
           }
           stage('Update K8s Manifest') {
-    steps {
+           steps {
         withCredentials([usernamePassword(
             credentialsId: 'github-credentials',
             usernameVariable: 'GITHUB_USER',
