@@ -21,7 +21,7 @@ pipeline {
             }
         }
         stage('Check Commit') {
-    steps {
+         steps {
         script {
             def commitMessage = sh(
                 script: 'git log -1 --pretty=%B',
